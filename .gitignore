@@ -1,0 +1,4 @@
+*.cri
+*.o
+*.exe
+.vscode/
