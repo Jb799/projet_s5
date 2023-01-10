@@ -71,9 +71,13 @@ void getWords(WORD ** wordList, unsigned * size, char * line){
 }
 
 // Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name){
+void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * dir_cri){
     DIR * dir = opendir(dir_name);
     char line[LINE_SIZE] = "";
+    char dirFile[DIR_SIZE] = "";
+    char dirCriFile[DIR_SIZE] = "";
+    char str_temp[CRI_LINE_SIZE] = "";
+    char itos[20]; 
     unsigned i = 0;
 
     if(dir == NULL){ // Si le dossier ne peut pas être ouvert
@@ -86,18 +90,35 @@ void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name){
     // Boucler pour chaque fichier dans le dossier
     while((file = readdir(dir)) != NULL){
         if(strstr(file->d_name, ".txt") != NULL){
-            strcpy(line, "");
-            strcat(line, dir_name);
-            strcat(line, file->d_name);
- 
-            FILE * Ffile = fopen(line, "r");
-            WORD * wordList = NULL;
-            unsigned wlSize = 0;
+            char * fileName = strtok(file->d_name, ".");
+            if(fileName == NULL) continue;
 
+            strcpy(dirCriFile, "");
+            strcat(dirCriFile, dir_cri);
+            strcat(dirCriFile, fileName);
+            strcat(dirCriFile, ".cri");
+
+            // Vérifier si le fichier CRI existe déjà:
+            FILE * CRIfile;
+            if ((CRIfile = fopen(dirCriFile, "r"))) {
+                fclose(CRIfile);
+                continue;
+            }
+
+            strcpy(dirFile, "");
+            strcat(dirFile, dir_name);
+            strcat(dirFile, file->d_name);
+            strcat(dirFile, ".txt");
+
+            // Fichier txt:
+            FILE * Ffile = fopen(dirFile, "r");
             if(Ffile == NULL){
                 *size = 0;
-                return;
+                continue;
             }
+
+            WORD * wordList = NULL;
+            unsigned wlSize = 0;
 
             // Lire ligne par ligne :
             while (fgets(line, LINE_SIZE, Ffile) != NULL)
@@ -105,23 +126,31 @@ void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name){
                 getWords(&wordList, &wlSize, line);
             }
 
-            printf("Size: %d\n", wlSize);
-            printf("WordList for %s: \n", file->d_name);
+            // Création du fichier CRI:
+            CRIfile = fopen(dirCriFile, "wb");
+            if (CRIfile == NULL) {
+                printf("Une erreur lors de la création des fichiers .CRI!\n");
+                exit(EXIT_FAILURE);
+            }
 
-            printf("\n###################\n");
             for (unsigned j = 0; j < wlSize; j++)
             {
-                printf("%s:%d\n", wordList[j].word, wordList[j].count);
+                itoa(wordList[j].count, itos, 10);
+
+                strcpy(str_temp, "");
+                strcat(str_temp, wordList[j].word);
+                strcat(str_temp, ":");
+                strcat(str_temp, itos);
+
+                fwrite(str_temp, sizeof(char), sizeof(str_temp), CRIfile);
             }
-            printf("\n###################\n");
             
             free(wordList);
+            fclose(CRIfile);
             fclose(Ffile);
         }
 
-        i++; // i défini le ième fichier mais aussi sa place dans le tableau
-
-        if(i > 2) return; // DEBUG
+        i++; // i défini le ième fichier
     }
     
     closedir(dir);

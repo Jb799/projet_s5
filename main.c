@@ -5,7 +5,7 @@ int main(){
     FCri tab;
     unsigned size = 0;
 
-    getCriTabFromFolder(&tab, &size, "./files/");
+    getCriTabFromFolder(&tab, &size, "./files/", "./cri/");
 
     if(size == 0){
         printf("Une erreur lors de la lecture du dossier");

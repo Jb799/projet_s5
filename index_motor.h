@@ -8,6 +8,8 @@
 #include <ctype.h>
 
 #define LINE_SIZE 1000
+#define DIR_SIZE 200
+#define CRI_LINE_SIZE 50
 
 // Structure pour un fichier CRI:
 typedef struct cri_file {
@@ -21,7 +23,7 @@ typedef struct word {
 } WORD;
 
 // Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name);
+void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * dir_cri);
 
 // Récupérer les mots d'une ligne (chaîne):
 void getWords(WORD ** wordList, unsigned * size, char * line);
