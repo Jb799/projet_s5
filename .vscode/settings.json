@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "stdio.h": "c",
-        "index_motor.h": "c",
-        "cstdlib": "c",
-        "stdlib.h": "c",
-        "ctype.h": "c"
-    }
-}
