@@ -34,8 +34,8 @@ typedef struct word {
 	unsigned count;
 } WORD;
 
-// Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder();
+// Indexer des fichiers .txt en .CRI:
+void indexFilesFromFolder();
 
 // Récupérer les mots d'une ligne (chaîne):
 void getWords(WORD ** wordList, unsigned * size, char * line);

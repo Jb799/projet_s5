@@ -3,7 +3,7 @@
  * 
  * Contient des fonctions et procedures permetant le fonctionnement
  * du moteur d'indexation du programme. La fonction principale est
- * getCriTabFromFolder().
+ * indexFilesFromFolder().
  * 
  * Auteur : Jean-Baptiste & Duncan
  * Date de création : 03/01/2023
@@ -102,7 +102,7 @@ void getDir(DIR * dir, char dir_name[], char * msg){
 }
 
 // Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder(){
+void indexFilesFromFolder(){
     char txt_dir_name[DIR_SIZE], cri_dir_name[DIR_SIZE];
     DIR * dirTxt = NULL;
     DIR * dirCRI = NULL;
