@@ -1,4 +1,18 @@
+/* 
+ * index_motor.c
+ * 
+ * Contient des fonctions et procedures permetant le fonctionnement
+ * du moteur d'indexation du programme. La fonction principale est
+ * getCriTabFromFolder().
+ * 
+ * Auteur : Jean-Baptiste & Duncan
+ * Date de création : 03/01/2023
+ * Dernière modification : 11/01/2023
+ * 
+ */
+
 #include "index_motor.h"
+#include "menu.h"
 
 // Ajouter un mot à une chaine de mots (Wordlist):
 void wlPushBack(WORD ** wordList, unsigned * size, WORD word){
@@ -7,7 +21,7 @@ void wlPushBack(WORD ** wordList, unsigned * size, WORD word){
     *wordList = (WORD *)realloc(*wordList, (*size) * sizeof(WORD));
 
     if(*wordList == NULL) {
-        printf("Erreur d'allocation mémoire (wlPushBack)\n");
+        printf("Erreur d'allocation memoire (wlPushBack)\n");
         exit(EXIT_FAILURE);
     }
 
@@ -70,33 +84,56 @@ void getWords(WORD ** wordList, unsigned * size, char * line){
     }
 }
 
+void getDir(DIR * dir, char dir_name[], char * msg){
+    unsigned err = 0;
+
+    while(dir == NULL){
+        clear(); displayLogo();
+        
+        if(err == 1)
+            printf("[Erreur] - Chemin d'acces introuvable (%s).\n\n", dir_name);
+
+        printf("%s", msg);
+
+        scanf("%s", dir_name);
+        dir = opendir(dir_name);
+        err = 1;
+    }
+}
+
 // Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * dir_cri){
-    DIR * dir = opendir(dir_name);
+void getCriTabFromFolder(){
+    char txt_dir_name[DIR_SIZE], cri_dir_name[DIR_SIZE];
+    DIR * dirTxt = NULL;
+    DIR * dirCRI = NULL;
     char line[LINE_SIZE] = "";
     char dirFile[DIR_SIZE] = "";
     char dirCriFile[DIR_SIZE] = "";
     char str_temp[CRI_LINE_SIZE] = "";
-    char itos[20]; 
-    unsigned i = 0;
-
-    if(dir == NULL){ // Si le dossier ne peut pas être ouvert
-        *size = 0;
-        return;
-    }
-
+    char itos[20];
     struct dirent* file;
 
+    // Deamander les chemins d'accès:
+    getDir(dirTxt, txt_dir_name, "Donnez le chemin d'acces contenant les fichiers .txt a indexer :\n => ");
+    getDir(dirCRI, cri_dir_name, "Donnez le chemin d'acces ou seront enregistrer les fichiers .CRI d'indexation :\n => ");
+
+    closedir(dirCRI);
+    clear(); displayLogo();
+
+    printf("[INDEX MOTOR] - Demarrage de l'indexation des fichiers .txt du repertoire %s\n", txt_dir_name);
+
+    dirTxt = opendir(txt_dir_name);
+
     // Boucler pour chaque fichier dans le dossier
-    while((file = readdir(dir)) != NULL){
+    while((file = readdir(dirTxt)) != NULL){
         if(strstr(file->d_name, ".txt") != NULL){
             char * fileName = strtok(file->d_name, ".");
             if(fileName == NULL) continue;
 
             strcpy(dirCriFile, "");
-            strcat(dirCriFile, dir_cri);
+            strcat(dirCriFile, cri_dir_name);
             strcat(dirCriFile, fileName);
-            strcat(dirCriFile, ".cri");
+            strcat(dirCriFile, ".CRI");
 
             // Vérifier si le fichier CRI existe déjà:
             FILE * CRIfile;
@@ -106,14 +143,14 @@ void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * di
             }
 
             strcpy(dirFile, "");
-            strcat(dirFile, dir_name);
+            strcat(dirFile, txt_dir_name);
             strcat(dirFile, file->d_name);
             strcat(dirFile, ".txt");
 
             // Fichier txt:
             FILE * Ffile = fopen(dirFile, "r");
             if(Ffile == NULL){
-                *size = 0;
+                printf("[WARNING] Impossible d'ouvrir le fichier %s...\n", dirFile);
                 continue;
             }
 
@@ -129,8 +166,8 @@ void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * di
             // Création du fichier CRI:
             CRIfile = fopen(dirCriFile, "wb");
             if (CRIfile == NULL) {
-                printf("Une erreur lors de la création des fichiers .CRI!\n");
-                exit(EXIT_FAILURE);
+                printf("[WARNING] Impossible d'indexer le fichier %s...\n", dirFile);
+                continue;
             }
 
             for (unsigned j = 0; j < wlSize; j++)
@@ -144,14 +181,17 @@ void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * di
 
                 fwrite(str_temp, sizeof(char), sizeof(str_temp), CRIfile);
             }
+
+            printf("    [INDEX MOTOR] Fichier %s indexer !\n", dirFile);
             
             free(wordList);
             fclose(CRIfile);
             fclose(Ffile);
         }
-
-        i++; // i défini le ième fichier
     }
-    
-    closedir(dir);
+
+    closedir(dirTxt);
+
+    printf("[INDEX MOTOR] - Fin de l'indexation des fichiers !\n\n");
+    wait();
 }

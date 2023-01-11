@@ -1,16 +1,34 @@
+/* 
+ * main.c
+ * 
+ * Contient la fonction principale uniquement afin
+ * de faciliter les tests et les modifications.
+ * 
+ * Auteur : Jean-Baptiste, Duncan, Mohamed & Mila
+ * Date de création : 03/01/2023
+ * Dernière modification : 11/01/2023
+ * 
+ */
+
 #include <stdio.h>
 #include "index_motor.h"
+#include "menu.h"
 
-int main(){
-    FCri tab;
-    unsigned size = 0;
+int main(int argc, char *argv[]){
+    while(1){
+        switch (displayMainMenu())
+        {
+        case 1:
+            getCriTabFromFolder();
+            break;
 
-    getCriTabFromFolder(&tab, &size, "./files/", "./cri/");
+        case 2:
+            break;
 
-    if(size == 0){
-        printf("Une erreur lors de la lecture du dossier");
-    }else{
-        printf("Tout est bon !");
+        default:
+            return 0;
+            break;
+        }
     }
 
     return 0;

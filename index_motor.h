@@ -1,3 +1,14 @@
+/* 
+ * index_motor.h
+ * 
+ * En-tête du fichier index_motor.c
+ * 
+ * Auteur : Jean-Baptiste & Duncan
+ * Date de création : 03/01/2023
+ * Dernière modification : 11/01/2023
+ * 
+ */
+
 #ifndef __INDEX_MOTOR__
 #define __INDEX_MOTOR__
 
@@ -6,6 +17,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <ctype.h>
+
 
 #define LINE_SIZE 1000
 #define DIR_SIZE 200
@@ -23,7 +35,7 @@ typedef struct word {
 } WORD;
 
 // Convertir les contenues de fichiers en fichiers CRI:
-void getCriTabFromFolder(FCri * tab, unsigned * size, char * dir_name, char * dir_cri);
+void getCriTabFromFolder();
 
 // Récupérer les mots d'une ligne (chaîne):
 void getWords(WORD ** wordList, unsigned * size, char * line);
@@ -36,5 +48,8 @@ void wlPushBack(WORD ** wordList, unsigned * size, WORD word);
 
 // Permet de netoyer un mot :
 void cleanWord(char * word);
+
+// Permet de récupérer un chemin d'accès:
+void getDir(DIR * dir, char dir_name[], char * msg);
 
 #endif /*__INDEX_MOTOR__*/
