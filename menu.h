@@ -14,6 +14,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
+
+// Permet de récupérer un chemin d'accès:
+void getDir(DIR * dir, char dir_name[], char * msg);
 
 // Afficher le menu principal:
 int displayMainMenu();

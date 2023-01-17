@@ -13,16 +13,18 @@
 #include <stdio.h>
 #include "index_motor.h"
 #include "menu.h"
+#include "search_motor.h"
 
 int main(int argc, char *argv[]){
     while(1){
         switch (displayMainMenu())
         {
         case 1:
-            getCriTabFromFolder();
+            indexFilesFromFolder();
             break;
 
         case 2:
+            startSearchMotor();
             break;
 
         default:
