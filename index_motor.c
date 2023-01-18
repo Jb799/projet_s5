@@ -54,10 +54,10 @@ void getCRIFromFileToTab(char dir_cri[], CRI ** criTab, unsigned * tabSize){
             while (fgets(line, LINE_SIZE, Crifile) != NULL)
             {
                 if(i == 0){
-                    line[strlen(line)-1] = "";
+                    line[strlen(line)-1] = '\0';
                     new_cri.dir = strdup(line);
                 }else if(i == 1){
-                    line[strlen(line)-1] = "";
+                    line[strlen(line)-1] = '\0';
                     new_cri.name = strdup(line);
                 }else{
                     WORD new_word;
@@ -250,7 +250,7 @@ void indexFilesFromFolder(){
 
             for (unsigned j = 0; j < wlSize; j++)
             {
-                itoa(wordList[j].count, itos, 10);
+                sprintf(itos, "%d", wordList[j].count);
 
                 strcpy(str_temp, "");
                 strcat(str_temp, wordList[j].word);

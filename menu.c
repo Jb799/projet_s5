@@ -29,11 +29,14 @@ void clear(){
 void wait(){
     // Renvoie le chemin d'accès vers le shell win sinon NULL donc Linux ou MacOs:
     char *env_value = getenv("COMSPEC"); 
+    char w[100];
 
     if(env_value != NULL)
         system("PAUSE");
-    else
-        system("read");
+    else{
+        printf("[Y] pour continuer...");
+        scanf("%s", w);
+    }
 }
 
 // Afficher le logo du programme:

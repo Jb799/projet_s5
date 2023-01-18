@@ -18,6 +18,12 @@
 
 #define DIR_SIZE 200
 
+// Structure pour les résultats de recherches:
+typedef struct result {
+	char * dir;
+	int count;
+} RESULT;
+
 // Fonction principale pour lancer le moteur de recherche:
 void startSearchMotor();
 

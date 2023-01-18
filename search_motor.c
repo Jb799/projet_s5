@@ -25,23 +25,64 @@ void setCriTab(CRI ** criTab, unsigned * tabSize){
     getCRIFromFileToTab(cri_dir_name, criTab, tabSize);
 }
 
-// Permet de réaliser des recherches de mots dans les fichiers indéxés:
-void searchWords(CRI * criTab, unsigned tabSize){
-    char sWord[100], cWord[100];
-    getWordsSearch(sWord, cWord);
-
-    printf("\n\n Voici les resultats pour le mot %s: \n\n", cWord);
-
-    for (unsigned i = 0; i < tabSize; i++)
-    {
-        for (unsigned j = 0; j < criTab[i].wordlistSize; j++)
-        {
-            if(strcmp(criTab[i].words[j].word, sWord) == 0){
-                printf("%s  %dx\n\n", criTab[i].dir, criTab[i].words[j].count);
+// Permet de trier le tableau de résultats:
+void sortResultsTab(RESULT * resultsTab, unsigned resTabSize) {
+    for (unsigned i = 0; i < resTabSize - 1; i++) {
+        for (unsigned j = i + 1; j < resTabSize; j++) {
+            if (resultsTab[i].count < resultsTab[j].count) {
+                RESULT temp = resultsTab[i];
+                resultsTab[i] = resultsTab[j];
+                resultsTab[j] = temp;
             }
         }
     }
+}
+
+// Permet de réaliser des recherches de mots dans les fichiers indéxés:
+void searchWords(CRI * criTab, unsigned tabSize){
+    char sWord[100]= "", cWord[100] = "";
     
+    while (strcmp(cWord, "exit;") != 0)
+    {
+        getWordsSearch(sWord, cWord);
+
+        if(strcmp(cWord, "exit;") == 0) break;
+
+        clear(); displayLogo();
+
+        printf("\n\n Voici les occurences pour le mot \"%s\": \n\n", cWord);
+
+        RESULT * resultsTab = NULL;
+        unsigned resTabSize = 0;
+
+        // Récupérer les résultats:
+        for (unsigned i = 0; i < tabSize; i++)
+        {
+            for (unsigned j = 0; j < criTab[i].wordlistSize; j++)
+            {
+                if(strcmp(criTab[i].words[j].word, sWord) == 0){
+                    RESULT res;
+                    
+                    res.dir = strdup(criTab[i].dir);
+                    res.count = criTab[i].words[j].count;
+
+                    resTabSize++;
+                    resultsTab = realloc(resultsTab, resTabSize * sizeof(RESULT));
+                    resultsTab[resTabSize - 1] = res;
+                    break;
+                }
+            }
+        }
+
+        sortResultsTab(resultsTab, resTabSize);
+
+        for (unsigned i = 0; i < resTabSize; i++) {
+            printf("[%s] | %dx\n", resultsTab[i].dir, resultsTab[i].count);
+            printf("------------------------------------\n");
+        }
+
+        wait();
+    }
 }
 
 // Fonction principale pour lancer le moteur de recherche:
@@ -54,6 +95,4 @@ void startSearchMotor(){
     wait();
 
     searchWords(criTab, tabSize);
-
-    wait();
 }
