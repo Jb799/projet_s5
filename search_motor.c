@@ -21,7 +21,7 @@ void setCriTab(CRI * criTab, unsigned * tabSize){
 
     // Demander le chemin d'accès aux fichiers .CRI:
     getDir(dirCRI, cri_dir_name, "Donnez le chemin d'acces a votre base de donnee CRI (contenant les fichiers .CRI) :\n => ");
-    
+
     getCRIFromFileToTab(cri_dir_name, criTab, tabSize);
 }
 
@@ -32,12 +32,12 @@ void startSearchMotor(){
 
     setCriTab(criTab, &tabSize);
 
-    printf("End RRead\n");
-
-    for (unsigned i = 0; i < tabSize; i++)
-    {
+    for (unsigned i = 0; i < tabSize; i++){
         printf("File: %s\n", criTab[i].name);
+        free(criTab[i].dir);
+        free(criTab[i].name);
     }
+    free(criTab);
 
     wait();
 }

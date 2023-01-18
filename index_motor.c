@@ -15,25 +15,29 @@
 #include "menu.h"
 
 // Charger en mémoire les fichiers CRI:
-void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
+/*void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
     DIR * dirCRI = opendir(dir_cri);
     struct dirent* file;
-    FILE * criFile;
-    WORD * wordList = NULL;
     char path[DIR_SIZE] = "";
     char line[CRI_LINE_SIZE] = "";
     unsigned i, worldlistSize;
 
+    *tabSize = 0;
+
     // Boucler pour chaque fichier dans le dossier
     while((file = readdir(dirCRI)) != NULL){
         if(strstr(file->d_name, ".CRI") != NULL){
-            wordList = NULL;
+            WORD * wordList = NULL;
             i = worldlistSize = 0;
             CRI new_cri;
-            
+            FILE * criFile = NULL;
+
+            // Initialise path
+            memset(path, 0, sizeof(path));
             strcpy(path, dir_cri);
             strcat(path, file->d_name);
 
+            // Ouvre le fichier
             criFile = fopen(path, "r");
 
             if (criFile == NULL){
@@ -43,33 +47,103 @@ void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
 
             i = 0;
 
+            printf("%s\n", file->d_name);
+            
             // Lire le fichier ligne par ligne:
-            while (fgets(line, sizeof(line), criFile) != NULL) {
+            while (fgets(line, CRI_LINE_SIZE, criFile) != NULL) {
+                int len = strlen(line);
+                if(line[len-1] == '\n') line[len-1] = '\0';
+
                 if(i == 0){
-                    new_cri.dir = line;
+                    new_cri.dir = (char *)malloc(len+1);
+                    strcpy(new_cri.dir, line);
                 }else if(i == 1){
-                    new_cri.name = line;
+                    new_cri.name = (char *)malloc(len+1);
+                    strcpy(new_cri.name, line);
                 }else{
                     WORD new_word;
                     sscanf(line, "%s %d", new_word.word, &new_word.count);
 
                     wlPushBack(&wordList, &worldlistSize, new_word);
                 }
-
                 i++;
             }
-
-            fclose(criFile);
-            free(wordList);
 
             new_cri.wordlistSize = worldlistSize;
             new_cri.words = wordList;
 
             criPushBack(&criTab, tabSize, new_cri);
+
+            fclose(criFile);
+            free(wordList);
         }
     }
 
-    printf("End RRead\n");
+    closedir(dirCRI);
+}*/
+
+// Charger en mémoire les fichiers CRI:
+void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
+    DIR * dirCRI = opendir(dir_cri);
+    char line[LINE_SIZE] = "";
+    struct dirent* file;
+    unsigned i;
+    WORD * wordList = NULL;
+
+    // Boucler pour chaque fichier dans le dossier
+    while((file = readdir(dirCRI)) != NULL){
+        if(strstr(file->d_name, ".CRI") != NULL){
+            char criPath[DIR_SIZE] = "";
+
+            strcpy(criPath, dir_cri);
+            strcat(criPath, file->d_name);
+
+            // Lire le fichier CRI:
+            FILE * Crifile = fopen(criPath, "r");
+            if(Crifile == NULL){
+                printf("[WARNING] Impossible d'ouvrir le fichier %s...\n", criPath);
+                continue;
+            }
+
+            CRI new_cri;
+            new_cri.wordlistSize = 0;
+
+            i = 0;
+
+            // Lire ligne par ligne :
+            while (fgets(line, LINE_SIZE, Crifile) != NULL)
+            {
+                if(i == 0){
+                    new_cri.dir = strdup(line);
+                    printf("DEB\n");
+                }else if(i == 1){
+                    new_cri.name = strdup(line);
+                    printf("DEB2\n");
+                }else{
+                    WORD new_word;
+                    sscanf(line, "%s %d", &new_word.word, &new_word.count);
+
+                    printf("DEB3\n");
+
+                    wlPushBack(&wordList, &new_cri.wordlistSize, new_word);
+
+                    printf("DEB4\n");
+                }
+
+                i++;
+            }
+
+            printf("DEB5\n");
+
+            printf("Size: %d\n", new_cri.wordlistSize);
+            
+            free(wordList);
+            wordList = NULL;
+            
+            fclose(Crifile);
+        }
+    }
+
     closedir(dirCRI);
 }
 
