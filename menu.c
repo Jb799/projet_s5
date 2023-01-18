@@ -12,6 +12,7 @@
  */
 
 #include "menu.h"
+#include "index_motor.h"
 
 // Permet de clear la console de tous les OS:
 void clear(){
@@ -92,4 +93,16 @@ void getDir(DIR * dir, char dir_name[], char * msg){
     }
 
     closedir(dir);
+}
+
+// Permet de récupérer des mots pour une recherche:
+void getWordsSearch(char words[], char cWord[]){
+    clear(); displayLogo();
+    
+    printf("Barre de recherche:\n   => ");
+    scanf("%s", cWord);
+
+    strcpy(words, cWord);
+    
+    cleanWord(words);
 }

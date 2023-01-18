@@ -15,12 +15,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <string.h>
 
 // Permet de récupérer un chemin d'accès:
 void getDir(DIR * dir, char dir_name[], char * msg);
 
 // Afficher le menu principal:
 int displayMainMenu();
+
+// Permet de récupérer des mots pour une recherche:
+void getWordsSearch(char words[], char cWord[]);
 
 // Afficher le logo du programme:
 void displayLogo();

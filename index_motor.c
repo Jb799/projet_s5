@@ -15,80 +15,18 @@
 #include "menu.h"
 
 // Charger en mémoire les fichiers CRI:
-/*void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
-    DIR * dirCRI = opendir(dir_cri);
-    struct dirent* file;
-    char path[DIR_SIZE] = "";
-    char line[CRI_LINE_SIZE] = "";
-    unsigned i, worldlistSize;
-
-    *tabSize = 0;
-
-    // Boucler pour chaque fichier dans le dossier
-    while((file = readdir(dirCRI)) != NULL){
-        if(strstr(file->d_name, ".CRI") != NULL){
-            WORD * wordList = NULL;
-            i = worldlistSize = 0;
-            CRI new_cri;
-            FILE * criFile = NULL;
-
-            // Initialise path
-            memset(path, 0, sizeof(path));
-            strcpy(path, dir_cri);
-            strcat(path, file->d_name);
-
-            // Ouvre le fichier
-            criFile = fopen(path, "r");
-
-            if (criFile == NULL){
-                printf("[WARNING] - Impossible d'ouvrir le fichier %s...\n", file->d_name);
-                continue;
-            }
-
-            i = 0;
-
-            printf("%s\n", file->d_name);
-            
-            // Lire le fichier ligne par ligne:
-            while (fgets(line, CRI_LINE_SIZE, criFile) != NULL) {
-                int len = strlen(line);
-                if(line[len-1] == '\n') line[len-1] = '\0';
-
-                if(i == 0){
-                    new_cri.dir = (char *)malloc(len+1);
-                    strcpy(new_cri.dir, line);
-                }else if(i == 1){
-                    new_cri.name = (char *)malloc(len+1);
-                    strcpy(new_cri.name, line);
-                }else{
-                    WORD new_word;
-                    sscanf(line, "%s %d", new_word.word, &new_word.count);
-
-                    wlPushBack(&wordList, &worldlistSize, new_word);
-                }
-                i++;
-            }
-
-            new_cri.wordlistSize = worldlistSize;
-            new_cri.words = wordList;
-
-            criPushBack(&criTab, tabSize, new_cri);
-
-            fclose(criFile);
-            free(wordList);
-        }
-    }
-
-    closedir(dirCRI);
-}*/
-
-// Charger en mémoire les fichiers CRI:
-void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
+void getCRIFromFileToTab(char dir_cri[], CRI ** criTab, unsigned * tabSize){
     DIR * dirCRI = opendir(dir_cri);
     char line[LINE_SIZE] = "";
     struct dirent* file;
-    unsigned i;
+    unsigned i, Itemp;
+    char Stemp[100] = "";
     WORD * wordList = NULL;
+
+    clear();
+    displayLogo();
+
+    printf("Chargement des fichiers CRI du dossier %s...\n", dir_cri);
 
     // Boucler pour chaque fichier dans le dossier
     while((file = readdir(dirCRI)) != NULL){
@@ -97,6 +35,8 @@ void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
 
             strcpy(criPath, dir_cri);
             strcat(criPath, file->d_name);
+
+            printf("    %s\n", criPath);
 
             // Lire le fichier CRI:
             FILE * Crifile = fopen(criPath, "r");
@@ -114,30 +54,27 @@ void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
             while (fgets(line, LINE_SIZE, Crifile) != NULL)
             {
                 if(i == 0){
+                    line[strlen(line)-1] = "";
                     new_cri.dir = strdup(line);
-                    printf("DEB\n");
                 }else if(i == 1){
+                    line[strlen(line)-1] = "";
                     new_cri.name = strdup(line);
-                    printf("DEB2\n");
                 }else{
                     WORD new_word;
-                    sscanf(line, "%s %d", &new_word.word, &new_word.count);
+                    sscanf(line, "%s %d", Stemp, &Itemp);
 
-                    printf("DEB3\n");
+                    new_word.word = strdup(Stemp);
+                    new_word.count = Itemp;
 
                     wlPushBack(&wordList, &new_cri.wordlistSize, new_word);
-
-                    printf("DEB4\n");
                 }
 
                 i++;
             }
 
-            printf("DEB5\n");
-
-            printf("Size: %d\n", new_cri.wordlistSize);
+            new_cri.words = wordList;
+            criPushBack(criTab, tabSize, new_cri);
             
-            free(wordList);
             wordList = NULL;
             
             fclose(Crifile);
@@ -145,6 +82,10 @@ void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize){
     }
 
     closedir(dirCRI);
+
+    free(wordList);
+
+    printf("Les fichiers sont charges !\n\n");
 }
 
 // Ajouter un CRI à un tableau de CRI:

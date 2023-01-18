@@ -22,6 +22,9 @@
 void startSearchMotor();
 
 // Permet de charger les fichiers CRI en mémoire:
-void setCriTab(CRI * criTab, unsigned * tabSize);
+void setCriTab(CRI ** criTab, unsigned * tabSize);
+
+// Permet de réaliser des recherches de mots dans les fichiers indéxés:
+void searchWords(CRI * criTab, unsigned tabSize);
 
 #endif /*__SEARCHMOTOR__*/

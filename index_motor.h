@@ -37,7 +37,7 @@ typedef struct cri_file {
 } CRI;
 
 // Charger en mémoire les fichiers CRI:
-void getCRIFromFileToTab(char dir_cri[], CRI * criTab, unsigned * tabSize);
+void getCRIFromFileToTab(char dir_cri[], CRI ** criTab, unsigned * tabSize);
 
 // Indexer des fichiers .txt en .CRI:
 void indexFilesFromFolder();
